@@ -216,6 +216,3 @@ protected boolean printing = false;
 		//
 	}
 }
-
-
-
