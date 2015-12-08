@@ -246,5 +246,94 @@ regex处理中，圆括号中的内容最先处理，正则表达式可能会出
  
  
  /**
- 
+ 5.打印匹配的行
+ 打印一个或多个文件中与regex匹配的行
  */
+ import java.io.*;
+ import java.util.regex.*;
+ 
+ public class Grep0 {
+	 public static void main(String[] args) throws IOException {
+		 BufferedReader is = new BufferedReader(new InputStreamReader(System.in));
+		 if (args.length != 1) {
+			 System.err.println("Usage: Grep0 pattern");
+			 System.exit(1);
+		 }
+		 Pattern patt = Pattern.compile(args[0]);
+		 Matcher matcher = patt.matcher("");
+		 String line = null;
+		 while((line = is.readLine()) != null) {
+			 matcher.reset(line); //注意这里需要reset一下，因为之前find一次后就会改变matcher标记，所以需要reset一下
+			 if (matcher.find()) {
+				 System.out.println(line);
+			 }
+		 }
+	 }
+ }
+ 
+ 
+ 
+ /**
+ 6.在正则表达式中控制大小写
+ 在查找时忽略大小写， 编译Pattern用标志参数Pattern.CASE_INSENSITIVE，若需要运行在不同场景下，则需要Pattern.UNICODE_CASE,
+ 若匹配重音符，用CANON_EQ（主要用于西班牙语之类的，有特殊字符e'之类，如果想让其在匹配中等同于e，就用CANON_EQ）
+ 有七个标记能作为第二个参数传递给Pattern.compile。若需要一个以上的值，可以用|（或操作符）
+ CASE_INSENSITIVE： 大小写不敏感
+ UNICODE_CASE： 启用Unicode感知大小写折叠
+ MULTILINE： 指定多行模式
+ CANON_EQ： 以基字符匹配，忽略重音符等特殊音符
+ COMMENTS: 模式中允许使用空白和注释（从#到终止符）
+ DOTALL： 匹配包括行终止符在内的所有符号
+ UNIX_LINES: 多行模式匹配时，只将"\n"作为行终止符号
+ */
+ Pattern re  = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE|Pattern.UNICODE_CASE);
+ re.matches(input); //匹配时不区分大小写
+ 
+ 
+ 
+ /**
+ 7.匹配换行
+ 用MATCH_MULTILINE，使用行起始符和行结束符（^和$），用DOTALL，默认情况下.*中的.只能匹配出\n以外的字符，
+ 如果遇到要匹配的字符串包含回车换行符（多行），则正则表达式遇到换行符后会停止，导致包含回车换行符的串不能正确匹配，可以用DOTALL
+ */
+ import java.util.regex.*;
+ 
+ public class NLMatch {
+	 public static void main(String[] argv) throws RESyntaxException {
+		 String input = "I dream of engines\nmore engines, all day long";
+		 System.out.println("INPUT: " + input);
+		 System.out.println();
+		 
+		 String[] patt = {
+			 "engines\nmore engines",
+			 "engines$"
+		 };
+		 
+		 for (int i = 0; i < patt.length; i++) {
+			 System.out.println("PATTERN " + patt[i]);
+			 
+			 boolean found;
+			 Pattern pll = Pattern.compile(patt[i]);
+			 found = pll.matcher(input).find();
+			 System.out.println("DEFAULT match" + found);
+			 
+			 Pattern pml = Pattern.compile(patt[i], Pattern.DOTALL|Pattern.MULTILINE);
+			 found = pml.matcher(input).find();
+			 System.out.println("MultiLine match " + found);
+			 System.out.println();
+			 
+		 }
+	 }
+ }
+ Result:
+ INPUT: I dream of engines
+ more engines, all day long
+ 
+ PATTERN engins
+ more engines
+ DEFAULT match true
+ MULTILINE match: true
+ 
+ PATTERN engins$
+ DEFAULT match false
+ MULTILINE match: true
