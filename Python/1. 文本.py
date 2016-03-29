@@ -453,4 +453,15 @@ VERBOSE
 最后：如果能用字符串的方法，就不要选择正则表达式，因为字符串方法更简单快速。
 
 
+13. Unicode
+#将Unicode转为普通python字符串，encode
+unicodestring = u"Hello world"
+uft8string = unicodestring.encode("utf-8")
+asxiistring = unicodestring.encode("ascii")
+
+#将普通python字符串转化为Unicode，decode
+plainstring1 = unicode(utf8string, "utf-8")
+plainstring2 = unicode(asciistring, "ascii")
+assert plainstring1 == plainstring2
+
 
