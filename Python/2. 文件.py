@@ -243,3 +243,83 @@ class ZipString(ZipFile): #继承自ZipFile
 #处理后可以new一个，然后调用zipfile的函数来处理，就像处理文件一样，因为StringIO已经把字符串变成了类似于内存文件，可以直接以文件的方法处理
 
 
+11. os.walk()
+os.walk(top, topdown=True, onerror=None, followlinks=False) 
+可以得到一个三元tupple(dirpath, dirnames, filenames), 
+第一个为起始路径，第二个为起始路径下的文件夹，第三个是起始路径下的文件。
+dirpath 是一个string，代表目录的路径，
+dirnames 是一个list，包含了dirpath下所有子目录的名字。
+filenames 是一个list，包含了非目录文件的名字。
+这些名字不包含路径信息，如果需要得到全路径，需要使用os.path.join(dirpath, name).
+
+F:\aaa 目录是这样的文件目录结构
+F:\aaa
+|--------1.txt
+|--------2.txt
+|--------3.txt
+|--------4
+         |-------5.txt
+         |-------6.txt
+         |-------7.txt
+#!/usr/bin/env python  
+# 2.py  
+# use UTF-8  
+# Python 3.3.0  
+  
+# os.walk()的使用  
+import os  
+  
+# 枚举dirPath目录下的所有文件  
+  
+def main():  
+#begin  
+    fileDir = "F:" + os.sep + "aaa"     # 查找F:\aaa 目录下  
+    for root, dirs, files in os.walk(fileDir):  
+    #begin  
+        print(root)  
+        print(dirs)  
+        print(files)  
+    #end  
+    os.system("pause")  
+#end  
+  
+if __name__ == '__main__':  
+#begin  
+    main()  
+#end  
+  
+  
+# 输出  
+# F:\aaa  
+# ['4']  
+# ['1.txt', '2.txt', '3.txt']  
+# F:\aaa\4  
+# []  
+# ['5.txt', '6.txt', '7.txt']  
+
+
+12. yeild
+yield是生成的意思，但是在python中则是作为生成器理解，生成器的用处主要可以迭代
+当一个函数中含有yield时,它不再是一个普通的函数,而是一个生成器
+>>> def mygenerator():  
+...     print 'start...'  
+...     yield 5  
+...   
+>>> mygenerator()            //在此处调用,并没有打印出start...说明存在yield的函数没有被运行,即暂停  
+<generator object mygenerator at 0xb762502c>  
+>>> mygenerator().next()     //调用next()即可让函数运行.  
+start...  
+5  
+
+>>> def g(n):
+...     for i in range(n):
+...             yield i **2
+...
+>>> for i in g(5):
+...     print i,":",
+...
+0 : 1 : 4 : 9 : 16 :
+
+yeild会把当前的值暂存，调用next时才返回，for循环可以访问yeild不用next
+yeild会暂存当前值，等下一次迭代才返回，即不像一般的函数会生成值后退出，生成器函数在生成值后会自动挂起并暂停他们的执行和状态，他的本地变量将保存状态信息，
+这些信息在函数恢复时将再度有效
