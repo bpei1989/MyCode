@@ -103,4 +103,77 @@ def sort_strings_with_embeded_number(alist):
 sorted(alist, key=embeded_numbers)
 	
 	
+6. 随机顺序
+def process_all_in_random(data, process):
+	random.shuffle(data)
+	for elem in data: process(elem)
+
+
+7. 增加元素后保持list的顺序
+#可以用list.sort(),这样每次增加都要sort
+#用heapq模块
+import heapq
+heapq.heapify(tlist)
+
+
+8. 获取序列中最小的n个元素
+#可以用sort，但如果序列很长则用堆
+import heapq
+def isorted(data):
+	data = list(data)
+	heapq.heapify(data)
+	while data:
+		yeild heapq.heappop(data)
+
+#还可以用库函数
+import heapq
+heapq.nsmallest(n, data)
+
+
+9. 在排序后的序列中寻找一段元素
+#二分查找，用bisect
+import bisect
+x_insert_point = bisect.bisect_right(L, x)
+x_is_present = L[x_insert_point:x_insert_point] == [x]]
+
+
+10. 寻找子串
+#字符串及Unicode用find或re最好
+
+
+11. 根据姓的首字母将名字排序和分组
+#先sort然后再用itertools的groupby
+def groupnames(name_iterable):
+	sorted_names = sorted(name_iterable, key=sortkeyfunc) #用groupby必须先sort
+	name_dict = {}
+	for key, group in itertools.groupby(sorted_names, groupkeyfunc):
+		name_dict[key] = tuple(group)
+	return name_dict
+
+#groupby
+from itertools import *
+def height_class(h):
+    if h>180:
+        return 'tall'
+    elif h<160:
+        return 'short'
+    else:
+        return 'middle'
+
+friends = [191, 158, 159, 165, 170, 177, 181, 182, 190]
+
+friends = sorted(friends,key = height_class)
+
+for m,n in groupby(friends,key = height_class):
+    print m
+    print list(n)
+
+结果：
+middle
+[165, 170, 177]
+short
+[158, 159]
+tall
+[191, 181, 182, 190]
+
 
