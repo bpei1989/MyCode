@@ -1,0 +1,34 @@
+1. #!/bin/bash
+/bin/bash是Bash的路径
+
+
+2.cat /proc/$PID/environ
+用于查看进程运行时的环境变量
+
+pgrep gedit
+获取gedit的进程号
+
+然后cat /proc/gedit进程号/environ
+结果是name=value格式，用\0分隔
+
+cat /proc/12501/environ | tr '\0' '\n'
+以回车作为分隔符
+
+环境变量是未在当前进程定义，而从父进程中继承而来的变量
+export命令可设置环境变量
+
+HTTP_PROXY定义了上网连那个服务器
+HTTP_PROXY=http://192.168.0.2:3128
+export HTTP_PROXY
+之后从当前shell脚本执行的任何程序都会继承这个变量
+
+配置path
+export PATH="$PATH:/home/user/bin"
+或
+PATH="$PATH:/home/user/bin"
+export PATH
+
+echo $PATH 或 echo ${PATH}
+
+
+3. 
