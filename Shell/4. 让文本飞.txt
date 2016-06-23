@@ -1,0 +1,78 @@
+1. 正则表达
+主要注意下面
+^行开头
+$行结尾
+[]集合中任一字符
+[^]除此集合中的任意一个字符，与^截然不同
+[-]范围
+? 0-1次
++ 1或多次
+* 0或多次
+() 匹配字符串可有可无，比如ma(tri)?匹配max或matirx
+(n) n次
+(n,) 多于n次
+(m,n) 最小m次，最大n次
+| 或，匹配左边或右边
+\ 转义
+
+\b 单词边界 \bcool 匹配cool，不匹配coolant
+\B 非单词边界
+\d 单个数字字符
+\D 单个非数字字符
+\w 单个字符
+\W 单个非字符
+\n 换行符
+\s 单个空白字符
+\S 单个非空白字符
+\r 回车
+
+
+2. grep
+grep "xxx" a # 单文件搜索
+grep "xxx" a b c # 多文件
+
+egrep支持正则表达
+echo this is a line. | egrep "[a-z]+\." #注意转义和+
+grep -r #递归，显示匹配的数量
+-i 忽略大小写
+打印匹配之前的三行
+grep "x" -A 3
+-B之后
+
+
+3. cut
+把文本按列切分，可以指定分隔符
+cut -f 2,3 file #显示第二列和第三列
+
+
+4. 统计文件中词频
+awk，grep，关联数组
+#!/bin/bash
+if [ $# -ne 1 ];
+then
+echo "Usage: $0 filename";
+exit -1
+fi
+
+filename=$1 
+
+#注意-o是输出的意思，几乎所有命令都有-o 
+#\b是匹配单词的意思，\是续行，过长的命令都会用这个，和转义一个标志符
+#awk对每一行都执行{}中所包含的内容,不用做循环处理，awk会对每一个处理
+#awk就是把文件逐行的读入，以空格为默认分隔符将每行切片，切开的部分再进行各种分析处理
+#传过来文本，在awk里，先通过分隔符（-F指定，比如-F ':'），然后会以$n标记
+egrep -o "\b[(:alpha:)]+\b" filename | \
+awk '{ count[$0]++}
+END{ printf("%-14s%d\n","Word","Count"};
+for(ind in count){
+printf("%-14s%d\n",ind,count[ind])}
+}'
+结果：
+$./word_freq.sh word
+Word	Count
+this	1 
+what	2
+
+
+5. sed
+
