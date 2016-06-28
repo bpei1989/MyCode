@@ -218,3 +218,56 @@ awk 'NR==M, NR==n' filename #打印M行到N行之间的文本
 awk '/start_pattern/, /pattern_end/' file #打印处于两个pattern正则表达式之间的文本
 
 
+12. 以逆序的形式打印
+awk可以，tac本来就是做这个的，cat的反写
+tac f1 f2
+seq 3 | tac
+3
+2
+1
+
+13. 电子邮件正则匹配
+egrep -o '[A-Za-z0-9.]+@[A-Za-z0-9.]+\.[a-zA-Z]{2,4}' mail.txt
+
+14.打印文件中某样式前n行或后n行
+grep a.txt | head -n 10 #取前十行
+grep -A 3 "Cameron Diaz" rank.txt #打印匹配之后的三行
+grep -B 3 "Cameron Diaz" rank.txt #打印匹配之前的三行
+-C打印周围的n行
+
+
+14. 移出包含某关键字的句子
+sed，用空白替换匹配的句子
+sed 's/ [^.]*mobile phones[^.]*\.//g' list #移出包含mobile phones
+两个点表示句号，句子之间的分隔符
+
+
+15. awk模拟head tail tac
+awk 'NR <= 10' filename #模仿head -10， NR:已经读取的记录数，NF:记录域个数，比如a b就是两个，空格是分隔符
+
+#NR是当前行号，$0是当前行，对10求余后存到数组中，最后再打印出来，比如文件一共99行，则
+#99%10=9,第10个元素存99行结果，之前的会被后面的覆盖，保证最后打印的是末尾的10行
+awk '{ buffer[NR % 10] = $0; } END { for(i=1;i<11;i++) { print buffer[i%10] } }' file #模仿tail - 10
+
+#把所有文本存入数组，然后倒着打印，模仿tac
+awk '{ buffer[NR] = $0; } END {for(i=NR; i>0 ;i--) {print buffer[i] } }' filename
+
+#注意对NR的运用，awk中NR，NF，-F很重要
+
+
+16. 文本操作
+#通过起始位置和长度生成子串
+string=abcdefgh
+echo ${string:4}
+结果：efgh
+
+echo ${string:4:2} #第二个字符开始，打印2个字符
+ef
+
+echo ${string:(-1)}
+h
+
+echo ${string:(-2):2}
+gh
+
+
