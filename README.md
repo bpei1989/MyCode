@@ -1,2 +1,2 @@
-# UsefulSnip
-The project contains very useful code snips
+# MyCode
+The folder contains very useful code snips
