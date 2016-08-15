@@ -1,0 +1,155 @@
+1. Servlet实例
+@WebServlet("/customer")
+public class CustomerServlet extends HttpServlet {
+	private CustomerService customerService;
+
+	@Override
+	public void init() throws ServletException {
+		cutomerService=new CustomerService();
+	}
+
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+		throws ServletExcepton, IOException {
+		List<Customer> customerList=customerService.getCustomerList();
+		req.setAttribute("customerList", customerList);
+		req.getRequestDispatcher("/WEB-INF/view/customer.jsp").forward(req, resp);
+	}
+}
+注：Servlet是基础，需要熟悉，其实Controller的method参数可以是HttpServlet，有些时候需要直接操作request或response，所以需要对其基本用法熟悉。
+
+
+2.一个类加载器
+//获取类加载器
+public static ClassLoader getClassLoader() {
+	return Thread.currentThread().getContextClassLoader();
+}
+
+//加载类
+public static Class<?> loadClass(String className, boolean isInitialized) {
+	Class<?> cls;
+	try {
+		//调用forName，入参有getClassLoader()
+		cls = Class.forName(className, isInitialized, getClassLoader());
+	} catch (ClassNotFoundException e) {
+		System.out.println("load class failure", e);
+		throw new RuntimeExcepton(e);
+	}
+	return cls;
+}
+注：类加载是Spring IOC的重要环节，很多Java框架都会用到这个技术，Class.forName(String)的参数可以在运行期配置，而无须改动代码
+需要注意Class类：
+当我们编写一个新的Java类时,JVM就会帮我们编译成class对象,存放在同名的.class文件中。在运行时，当需要生成这个类的对象，JVM就会检查此类是否已经装载内存中。若是没有装载，则把.class文件装入到内存中。若是装载，则根据class文件生成实例对象。
+每个java类运行时都在JVM里表现为一个class对象，可通过类名.class,类型.getClass(),Class.forName("类名")等方法获取class对象。
+class类没有公有的构造方法，它由JVM自动调用（在new对象或者加载-classLoader时）。
+Class对象的生成方式如下：
+1.Class.forName("类名字符串")  （注意：类名字符串必须是全称，包名+类名）
+2.类名.class
+3.实例对象.getClass()
+
+Class类的常用方法
+    1、getName() 
+    一个Class对象描述了一个特定类的属性，Class类中最常用的方法getName以 String 的形式返回此 Class 对象所表示的实体（类、接口、数组类、基本类型或 void）名称。
+    2、newInstance()
+    Class还有一个有用的方法可以为类创建一个Object实例，这个方法叫做newInstance()。例如：
+    x.getClass.newInstance()，创建了一个同x一样类型的新实例。newInstance()方法调用默认构造器（无参数构造器）初始化新建对象。
+    3、getClassLoader() 
+    返回该类的类加载器。
+    4、getComponentType() 
+    返回表示数组组件类型的 Class。
+    5、getSuperclass() 
+    返回表示此 Class 所表示的实体（类、接口、基本类型或 void）的超类的 Class。
+
+
+3.简单的Bean容器
+通过Class类获取实例化对象，仅仅有Class加载的类还不行，需要生成一个实例才可以用，基本可以理解为Class类似类的结构，加载到内存后可以根据它创建实例
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+//反射工具类
+public final class ReflectionUtil {
+	//创建实例
+	public static Object newInstance(Class<?> cls) {
+		Object instance;
+		try {
+			instance = cls.newInstance();
+		} catch (Exception e) {
+			System.out.println("new instance failure", e);
+			throw new RuntimeException(e);
+		}
+		return instance;
+	}
+
+	//调用方法
+	public static Object invokeMethod(Object obj, Method method, Object... args) {
+		Object result;
+		try {
+			method.setAccessible(true);
+			result = method.invoke(obj.args);
+		} catch (Exception e) {
+			System.out.println("invoke method failure", e);
+			throw new RuntimeException(e);
+		}
+		return result;
+	}
+
+	//设置成员变量
+	public static void setField(Object obj, Field field, Object value) {
+		try {
+			filed.setAccesible(true);
+			field.set(obj, value);//set方法
+		} catch (Exception e) {
+			System.out.println("set field failure", e);
+			throw new RuntimeException(e);
+		}
+	}
+
+}
+
+Spring IOC原理基于上面的代码，基本原理大致可以这么写：
+public class SimpleIoc {
+	private static final Map<Class<?>, Object> BEAN_MAP = new HashMap<Class<?>, Object>();
+
+	private static Set<Class<?>> beanClassSet = new HashSet<Class<?>>();
+
+	//根据指定包扫描有注解@Bean获取Class
+	private static void initClassSet() {
+		for(bean:filesInPackage) {
+			beanClassSet.add(Class.forName(bean.getClassName()));
+		}
+	}
+
+	private static void initBeanMap() {
+		for (Class<?> beanClass : beanClassSet) {
+			Object obj = Reflecttion.newInstance(beanClass);
+			BEAN_MAP.put(beanClass, obj);
+		}
+	}
+
+	public static void IocInit() {
+		for(Map.Entry<Class<?>,Object>beanEntry : BEAN_MAP.entrySet()) {
+			Class<?> beanClass = beanEntry.getKey();
+			Object beanInstance = beanEntry.getValue();
+			//获取Bean定义的所有成员变量
+			Field[] beanFileds = beanClass.getDeclaredFileds();
+			for(Field beanField : beanFileds) {
+				if(beanFiled.isAnnotation()) {//判断是否带有注解，注入其实例对象
+					Class<?> beanFiledClass = beanFiled.getType();
+					Object beanFiledInstance = BEAN_MAP.get(beanFiledClass);
+					ReflectionUtil.setFiled(beanInstance, beanFiled, beanFiledInstance);
+				}
+
+			}
+		}
+	}
+
+}
+基本步骤：先遍历包内有Bean注解的类，存到Set里，然后逐个取其Class存到另一个Set里，再逐个取出得到Instance，放到Map里，最后遍历Map，得到Field(通过getDeclaredFileds())，根据Filed从map里找到其实例对象，再把Instanceset set进去，这就是为什么需要有set方法
+
+
+4.Controller
+基本思路是把@RequestMapping的URL映射规则和Controller类中处理方法放到一个Map，需要调用时看Map中是否有这个URL，有的话就调用其method
+public class ControllerInit {
+	private static final Map<Request, Handler> ACTION_MAP = new HashMap<Request, Handler>();
+	
+} 
