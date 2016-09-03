@@ -1,0 +1,5 @@
+sed "s/Tom/Tommy/" 1.txt #把Tom的名字改成Tommy
+sed "/Mike/ d" 1.txt #删除包含Mike的行
+sed "1,3d" 1.txt #删除一到三行
+sed "/^$/ d" 1.txt #删除所有空白行
+sed "5,10! d" 1.txt #显示5-10行
