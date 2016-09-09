@@ -59,7 +59,7 @@ revchars = astring[::-1] # 步长为-1， 逐个字符反转
 revwords = astring.split() #字符串->单词列表
 revwords.reverse() #反转列表
 revwords = ' '.join(revwords) #单词列表->字符串
-revwords = ' '.join(asring.splot()[::-1]) #一行解决按词反转
+revwords = ' '.join(asring.split()[::-1]) #一行解决按词反转
 
 
 8. 检查字符串中是否出现了某字符集合中的字符
