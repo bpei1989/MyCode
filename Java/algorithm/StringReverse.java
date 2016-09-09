@@ -16,6 +16,7 @@ public class StringReverse {
 				begin = i + 1;//空格后的字符
 			}
 		}
+		swap(arr, begin, arr.length-1);//必须写，最后一个单词翻转
 		for(char t : arr) {
 			System.out.print(t);
 		}
