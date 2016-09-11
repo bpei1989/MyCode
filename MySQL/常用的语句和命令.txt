@@ -4,3 +4,8 @@ HeidiSQL¿ÉÒÔÔÚÕÆÎÕ³£¼ûSQLºÍÀí½âÊý¾Ý¿â»ù±¾Ô­Àí»ù´¡ÉÏÊ¹ÓÃ£¬¿ÉÒÔÔÚÒ»¶¨³Ì¶ÈÉÏÌá¸ßÐ§Â
 Mysql  -P ¶Ë¿ÚºÅ  -h  mysqlÖ÷»úÃû\ip -u root £¨ÓÃ»§£©  -p
 Èç¹ûÊÇÃüÁîÐÐÊÇmysqlËùÔÚµÄ±¾»ú¶øÇÒÓÃÄ¬ÈÏµÄ¶Ë¿Ú 3306 Ö±½ÓÊäÈë mysql -u root -p 
 
+´´½¨Êý¾Ý¿â
+CREATE DATABASE database-name 
+É¾³ýÊý¾Ý¿â
+drop database dbname
+
